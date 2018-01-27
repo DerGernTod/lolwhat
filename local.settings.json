@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=lolwhat8be5;AccountKey=QAO5uSCrMasKHHA+AA+kYTu7NNibTHIBKkMszUlm1/UkoJSjjrxxqrrFtedLbj8DyGL+/doSdbO4qFcZFu/YKg=="
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "*"
+  }
+}

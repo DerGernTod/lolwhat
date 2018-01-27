@@ -1,0 +1,142 @@
+<template>
+  <div class="hello">
+    <h1>{{ msg }}</h1>
+    <div>
+      <h2>Riot Api Service</h2>
+      <div>
+        <h3>Summoner</h3>
+        <div>{{ summonerData.error || summonerData.data }}</div>
+        <button v-on:click="requestSummonerData">Request Data</button>
+      </div>
+    </div>
+    <h2>Essential Links</h2>
+    <ul>
+      <li>
+        <a
+          href="https://vuejs.org"
+          target="_blank"
+        >
+          Core Docs
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://forum.vuejs.org"
+          target="_blank"
+        >
+          Forum
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://chat.vuejs.org"
+          target="_blank"
+        >
+          Community Chat
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://twitter.com/vuejs"
+          target="_blank"
+        >
+          Twitter
+        </a>
+      </li>
+      <br>
+      <li>
+        <a
+          href="http://vuejs-templates.github.io/webpack/"
+          target="_blank"
+        >
+          Docs for This Template
+        </a>
+      </li>
+    </ul>
+    <h2>Ecosystem</h2>
+    <ul>
+      <li>
+        <a
+          href="http://router.vuejs.org/"
+          target="_blank"
+        >
+          vue-router
+        </a>
+      </li>
+      <li>
+        <a
+          href="http://vuex.vuejs.org/"
+          target="_blank"
+        >
+          vuex
+        </a>
+      </li>
+      <li>
+        <a
+          href="http://vue-loader.vuejs.org/"
+          target="_blank"
+        >
+          vue-loader
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://github.com/vuejs/awesome-vue"
+          target="_blank"
+        >
+          awesome-vue
+        </a>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import { fetchMatchListByAccount } from '@/services/riotapiservice';
+
+export default {
+  name: 'HelloWorld',
+  data() {
+    return {
+      msg: 'Welcome to Your Vue.js App',
+      summonerData: {
+        data: null,
+        error: '',
+      },
+    };
+  },
+  methods: {
+    requestSummonerData() {
+      const app = this;
+      app.summonerData.error = '';
+      // dergerntod = 243801
+      // evakeefar = 213076956
+      fetchMatchListByAccount(213076956)
+        .then((matchList) => {
+          app.summonerData.data = matchList;
+        })
+        .catch((error) => {
+          app.summonerData.error = error.message || 'Error occurred';
+        });
+    },
+  },
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+h1, h2 {
+  font-weight: normal;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+</style>
