@@ -6,7 +6,7 @@ let activePromise = Promise.resolve();
 const baseUrl = 'https://euw1.api.riotgames.com/lol/match/v3';
 const accountUrl = `${baseUrl}/matchlists/by-account/`;
 const matchUrl = `${baseUrl}/matches/`;
-const apiKey = 'RGAPI-b8f8874d-43b6-49aa-b1a7-e5a793378a08';
+const apiKey = '';
 
 function waitUntilAllowed() {
   const totalWaitTime = curWaitUntil - Date.now();
