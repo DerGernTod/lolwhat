@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as express from 'express';
 import * as webpack from 'webpack';
 import * as http from 'http';
-import * as webpackMiddleware from 'webpack-dev-middleware';
+import * as webpackDevMiddleware from 'webpack-dev-middleware';
 import * as webpackHotMiddleware from 'webpack-hot-middleware';
 import * as config from '../build/webpack.dev.conf';
 
@@ -23,9 +23,9 @@ function startServer() {
 }
 
 if (isDeveloping) {
-  config.then(webpackConf => {
+  config.then((webpackConf) => {
     const compiler = webpack(webpackConf);
-    const middleware = webpackMiddleware(compiler, {
+    const middleware = webpackDevMiddleware(compiler, {
       publicPath: webpackConf.output.publicPath,
       stats: {
         colors: true,
@@ -37,10 +37,10 @@ if (isDeveloping) {
       },
     });
     app.use(middleware);
-    //app.use(webpackHotMiddleware(compiler));
+    app.use(webpackHotMiddleware(compiler));
     app.get('/api/matchList', (req, res) => {
       console.log('getting matchlist');
-      res.write(JSON.stringify({someResult: 'result'}));
+      res.write(JSON.stringify({ someResult: 'result' }));
       res.end();
     });
     app.get('*', (req, res) => {
@@ -50,7 +50,6 @@ if (isDeveloping) {
     });
     startServer();
   });
-
 } else {
   app.use(express.static(`${__dirname}../../dist`));
   app.get('*', (req, res) => {
