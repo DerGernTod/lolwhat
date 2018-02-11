@@ -111,7 +111,7 @@ export default {
       app.summonerData.error = '';
       // dergerntod = 243801
       // evakeefar = 213076956
-      fetchMatchListByAccount(213076956)
+      fetchMatchListByAccount(243801)
         .then((matchList) => {
           app.summonerData.data = matchList;
         })
@@ -125,7 +125,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
+h1,
+h2 {
   font-weight: normal;
 }
 ul {

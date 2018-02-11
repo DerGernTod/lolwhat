@@ -1,0 +1,4 @@
+path:
+  data: ./data/lib/elastic
+  logs: ./data/logs/elastic
+http.port: 9200

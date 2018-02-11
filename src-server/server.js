@@ -6,7 +6,9 @@ import * as http from 'http';
 import * as webpackDevMiddleware from 'webpack-dev-middleware';
 import * as webpackHotMiddleware from 'webpack-hot-middleware';
 import * as config from '../build/webpack.dev.conf';
+import elastic from './services/elastic';
 
+elastic();
 const isDeveloping = process.env.NODE_ENV !== 'production';
 const port = isDeveloping ? 3000 : Number(process.env.PORT);
 const app = express();
