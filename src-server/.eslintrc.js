@@ -1,7 +1,6 @@
 // https://eslint.org/docs/user-guide/configuring
 
 module.exports = {
-  root: true,
   parserOptions: {
     parser: 'babel-eslint'
   },
@@ -15,7 +14,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       webpack: {
-        config: '../build/webpack.base.conf.js'
+        config: './build/webpack.server.conf.js'
       }
     }
   },

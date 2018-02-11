@@ -33,6 +33,13 @@ var webpackConfig = {
         entryOnly: false,
       })
     ],
+    resolve: {
+      extensions: ['.js', '.json'],
+      alias: {
+        '@': path.resolve(__dirname, '../src-server'),
+        '&': path.resolve(__dirname, '../src-shared')
+      }
+    },
     externals: nodeModules,
     devtool: 'sourcemap'
 };
