@@ -1,5 +1,5 @@
 export function fetchMatchListByAccount(accountId) {
-  return fetch('/api/matchlist').then(response => response.json());
+  return fetch('/api/summonerByName').then(response => response.json());
   // return fetchRiotApi(`${accountUrl}${accountId}?api_key=${apiKey}`);
 }
 

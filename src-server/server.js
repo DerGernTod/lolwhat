@@ -6,7 +6,8 @@ import * as http from 'http';
 import * as webpackDevMiddleware from 'webpack-dev-middleware';
 import * as webpackHotMiddleware from 'webpack-hot-middleware';
 import * as config from '../build/webpack.dev.conf';
-import elastic from './services/elastic';
+import api from './api/api';
+import elastic from './services/elastic/elastic';
 
 elastic();
 const isDeveloping = process.env.NODE_ENV !== 'production';
@@ -40,11 +41,7 @@ if (isDeveloping) {
     });
     app.use(middleware);
     app.use(webpackHotMiddleware(compiler));
-    app.get('/api/matchList', (req, res) => {
-      console.log('getting matchlist');
-      res.write(JSON.stringify({ someResult: 'result' }));
-      res.end();
-    });
+    api(app);
     app.get('*', (req, res) => {
       console.log('delivering: ', path.join(__dirname, '../dist/index.html'));
       res.write(middleware.fileSystem.readFileSync(path.join(__dirname, '../dist/index.html')));

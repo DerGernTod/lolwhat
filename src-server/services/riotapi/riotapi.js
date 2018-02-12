@@ -1,11 +1,23 @@
 import timeout from '&/utils/timeout';
+import fetch from 'node-fetch';
+import secrets from '../../secrets.json';
 
 let curWaitUntil = 0;
 let activePromise = Promise.resolve();
-const baseUrl = 'https://euw1.api.riotgames.com/lol/match/v3';
-const accountUrl = `${baseUrl}/matchlists/by-account/`;
-const matchUrl = `${baseUrl}/matches/`;
-const apiKey = '';
+export const RIOT_URLS = {
+  base: 'https://euw1.api.riotgames.com/lol',
+  championMastery: 'champion-mastery/v3',
+  champion: 'platform/v3/champions',
+  league: 'league/v3',
+  staticData: 'static-data/v3',
+  status: 'status/v3/shard-data',
+  match: 'match/v3',
+  spectator: 'spectator/v3',
+  summoner: 'summoner/v3/summoners',
+  thirdPartyCode: 'platform/vr/third-party-code/by-summoner',
+  tournamentStub: 'tournament-stub/v3',
+  tournament: 'tournament/v3',
+};
 
 function waitUntilAllowed() {
   const totalWaitTime = curWaitUntil - Date.now();
@@ -15,9 +27,11 @@ function waitUntilAllowed() {
   return timeout(totalWaitTime).then(() => waitUntilAllowed());
 }
 
-export default function fetchRiotApi(url) {
-  activePromise = activePromise.then(waitUntilAllowed)
-    .then(() => fetch(url))
+export function fetchRiotApi(url) {
+  console.log(`Riotapi fetch to ${url}`);
+  activePromise = activePromise
+    .then(waitUntilAllowed)
+    .then(() => fetch(`${url}?api_key=${secrets.apiKey}`))
     .then((response) => {
       if (response.status !== 200) {
         return Promise.reject({
