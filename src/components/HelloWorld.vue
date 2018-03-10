@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { fetchMatchListByAccount } from '@/services/riotapiservice';
+import { fetchSummonerByName } from '@/services/riotapiservice';
 
 export default {
   name: 'HelloWorld',
@@ -111,9 +111,9 @@ export default {
       app.summonerData.error = '';
       // dergerntod = 243801
       // evakeefar = 213076956
-      fetchMatchListByAccount(243801)
-        .then((matchList) => {
-          app.summonerData.data = matchList;
+      fetchSummonerByName('DerGernTod')
+        .then((summonerData) => {
+          app.summonerData.data = summonerData;
         })
         .catch((error) => {
           app.summonerData.error = error.message || 'Error occurred';

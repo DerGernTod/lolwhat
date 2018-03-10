@@ -1,4 +1,5 @@
 {
-  "elasticExec": "c:\\workspaces\\devtools\\elasticsearch-5.1.2\\bin\\elasticsearch.bat",
-  "elasticConfPath": "./data"
+  "elasticExec": "c:\\workspaces\\devtools\\elasticsearch-6.2.2\\bin\\elasticsearch.bat",
+  "elasticConfPath": "./data",
+  "kibanaExec": "c:\\workspaces\\devtools\\kibana\\bin\\kibana.bat"
 }

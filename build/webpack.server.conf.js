@@ -10,7 +10,6 @@ fs.readdirSync('node_modules')
   .forEach(function(mod) {
     nodeModules[mod] = 'commonjs ' + mod;
   });
-  nodeModules
 var webpackConfig = {
     entry: path.resolve(__dirname, '../src-server/server.js'),
     output: {
@@ -41,6 +40,15 @@ var webpackConfig = {
       }
     },
     externals: nodeModules,
-    devtool: 'sourcemap'
+    devtool: 'sourcemap',
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          include: [path.resolve(__dirname, '../src-server')],
+        }
+      ]
+    }
 };
 module.exports = webpackConfig;

@@ -22,6 +22,7 @@ module.exports = {
   rules: {
     'no-unused-vars': ['warn'],
     'no-console': ['off'],
+    'no-underscore-dangle': ['off'],
     // don't require .vue extension when importing
     'import/extensions': ['error', 'always', {
       js: 'never'

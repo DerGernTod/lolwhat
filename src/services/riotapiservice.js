@@ -1,8 +1,8 @@
 export function fetchMatchListByAccount(accountId) {
-  return fetch('/api/summonerByName').then(response => response.json());
-  // return fetchRiotApi(`${accountUrl}${accountId}?api_key=${apiKey}`);
+  return fetch(`/api/matchListByAccount/${accountId}`).then(response => response.json());
 }
-
-export function fetchMatchById(matchId) {
-  // return fetchRiotApi(`${matchUrl}${matchId}?api_key=${apiKey}`);
+export function fetchSummonerByName(summonerName) {
+  return fetch(`/api/summonerByName/${summonerName}`).then(response => response.json());
 }
+// export function fetchMatchById(matchId) {
+// }

@@ -2,3 +2,4 @@ path:
   data: ./data/lib/elastic
   logs: ./data/logs/elastic
 http.port: 9200
+network.host: 127.0.0.1
