@@ -1,6 +1,7 @@
 import to from '&/utils/to';
 import { RIOT_URLS, fetchRiotApi } from './riotapi';
-import { getData, putData } from '../elastic/elastic';
+import { getData, putData, getOrCreateElasticData } from '../elastic/elastic';
+import { fetchProfileIcons } from './static';
 
 const SUMMONER_URLS = {
   byAccount: `${RIOT_URLS.base}/${RIOT_URLS.summoner}/by-account`,
@@ -8,21 +9,26 @@ const SUMMONER_URLS = {
 };
 
 export async function fetchSummonerByName(summonerName) {
-  let [err, summonerData] = await to(getData(`summoner/${summonerName}`));
-  console.log(`got summoner result ${JSON.stringify(summonerData)}`);
-  if (!err && summonerData.found && summonerData._source.validUntil > Date.now()) {
-    return summonerData._source;
-  }
-  console.log(`no valid data in elastic, fetching from riot api: ${err}`);
-  [err, summonerData] = await to(fetchRiotApi(`${SUMMONER_URLS.byName}/${summonerName}`));
-  console.log(`got riot api summoner result: ${JSON.stringify(summonerData)}`);
-  if (summonerData.accountId) {
-    summonerData.validUntil = Date.now() + (1000 * 60 * 60 * 6);
-    const [putErr, putResult] = await to(putData(`summoner/${summonerName}`, summonerData));
-    console.log('elastic put done:', putErr, putResult);
-    return summonerData;
-  }
-  return null;
+  return getOrCreateElasticData(
+    `summoner/${summonerName}`,
+    `${SUMMONER_URLS.byName}/${summonerName}`,
+    Date.now() + (1000 * 60 * 60 * 6),
+    async (data) => {
+      const { profileIconId } = data;
+      const [err, profileIcons] = await to(fetchProfileIcons());
+      if (!err) {
+        const profileUrl =
+          `http://ddragon.leagueoflegends.com/cdn/${
+            profileIcons.version
+          }/img/profileicon/${
+            profileIcons.data[profileIconId].image.full
+          }`;
+        console.log(`got profile icon data for icon id ${profileIconId}: ${JSON.stringify(profileUrl)}`);
+        return { ...data, profileUrl };
+      }
+      console.error(`error getting profile icon: ${JSON.stringify(err)}`);
+      return data;
+    });
 }
 
 export function fetchSummonerByAccount(accountId) {

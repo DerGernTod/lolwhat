@@ -4,9 +4,15 @@
     <div>
       <h2>Riot Api Service</h2>
       <div>
-        <h3>Summoner</h3>
-        <div>{{ summonerData.error || summonerData.data }}</div>
+        <h3>Search for summoner</h3>
+        <input v-model="summonerName" placeholder="Summoner name">
+        <div v-if="summonerData.error">{{ summonerData.error }}</div>
         <button v-on:click="requestSummonerData">Request Data</button>
+        <summoner-search-result v-if="summonerData.data"
+          :name="summonerData.data.name"
+          :level="summonerData.data.summonerLevel"
+          :profileUrl="summonerData.data.profileUrl">
+        </summoner-search-result>
       </div>
     </div>
     <h2>Essential Links</h2>
@@ -93,6 +99,7 @@
 
 <script>
 import { fetchSummonerByName } from '@/services/riotapiservice';
+import SummonerSearchResult from './summoner/SummonerSearchResult';
 
 export default {
   name: 'HelloWorld',
@@ -103,7 +110,11 @@ export default {
         data: null,
         error: '',
       },
+      summonerName: '',
     };
+  },
+  components: {
+    'summoner-search-result': SummonerSearchResult,
   },
   methods: {
     requestSummonerData() {
@@ -111,7 +122,7 @@ export default {
       app.summonerData.error = '';
       // dergerntod = 243801
       // evakeefar = 213076956
-      fetchSummonerByName('DerGernTod')
+      fetchSummonerByName(app.summonerName)
         .then((summonerData) => {
           app.summonerData.data = summonerData;
         })

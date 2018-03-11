@@ -1,5 +1,5 @@
 import timeout from '&/utils/timeout';
-import fetch from 'node-fetch';
+import fetch, { Headers } from 'node-fetch';
 import secrets from '../../secrets.json';
 
 let curWaitUntil = 0;
@@ -31,7 +31,9 @@ export function fetchRiotApi(url) {
   console.log(`Riotapi fetch to ${url}`);
   activePromise = activePromise
     .then(waitUntilAllowed)
-    .then(() => fetch(`${url}?api_key=${secrets.apiKey}`))
+    .then(() => fetch(url, {
+      headers: new Headers({ 'x-riot-token': secrets.apiKey }),
+    }))
     .then((response) => {
       if (response.status !== 200) {
         return Promise.reject({
