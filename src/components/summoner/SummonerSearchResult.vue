@@ -1,5 +1,5 @@
 <template>
-  <button class="tile">
+  <button class="tile" v-on:click="redirect">
     <div class="tile__header">
       <div class="tile__iconbox">
         <img :src="profileUrl" />
@@ -16,6 +16,10 @@ export default {
   data() {
     return {};
   },
-  methods: {},
+  methods: {
+    redirect() {
+      this.$router.push(`/summoner/${this.name}`);
+    },
+  },
 };
 </script>
