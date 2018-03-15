@@ -5,13 +5,17 @@
       <h2>Riot Api Service</h2>
       <div>
         <h3>Search for summoner</h3>
-        <input v-model="summonerName" placeholder="Summoner name">
-        <div v-if="summonerData.error">{{ summonerData.error }}</div>
-        <button v-on:click="requestSummonerData">Request Data</button>
-        <summoner-search-result v-if="summonerData.data"
-          :name="summonerData.data.name"
-          :level="summonerData.data.summonerLevel"
-          :profileUrl="summonerData.data.profileUrl">
+        <form v-on:submit="requestSummonerData($event)">
+          <input v-model="summonerName" placeholder="Summoner name">
+          <input type="submit" value="Request Data" />
+          <svg v-if="requestPending" class="loading__distractor loading__distractor--small" width="15px" height="15px" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">´
+            <circle class="loading__path" cx="15" cy="15" r="12"></circle>
+          </svg>
+        </form>
+        <summoner-search-result v-if="summonerData"
+          :name="summonerData.name"
+          :level="summonerData.summonerLevel"
+          :profileUrl="summonerData.profileUrl">
         </summoner-search-result>
       </div>
     </div>
@@ -98,7 +102,8 @@
 </template>
 
 <script>
-import { fetchSummonerByName } from '@/services/riotapiservice';
+import { mapActions, mapState } from 'vuex';
+import { loadSummoner } from '@/store/action-types';
 import SummonerSearchResult from './summoner/SummonerSearchResult';
 
 export default {
@@ -106,29 +111,28 @@ export default {
   data() {
     return {
       msg: 'Welcome to Your Vue.js App',
-      summonerData: {
-        data: null,
-        error: '',
-      },
       summonerName: '',
     };
   },
   components: {
     'summoner-search-result': SummonerSearchResult,
   },
+  computed: mapState({
+    summonerData: state => state.summoner.searchResult.fetchResult,
+    searchError: state => state.summoner.searchResult.error,
+    requestPending: state => state.summoner.requestPending,
+  }),
+  // computed: mapState({
+  //   summonerData: state => state.summoner.searchResult,
+  //   requestPending: state => state.summoner.requestPending,
+  // }),
   methods: {
-    requestSummonerData() {
-      const app = this;
-      app.summonerData.error = '';
-      // dergerntod = 243801
-      // evakeefar = 213076956
-      fetchSummonerByName(app.summonerName)
-        .then((summonerData) => {
-          app.summonerData.data = summonerData;
-        })
-        .catch((error) => {
-          app.summonerData.error = error.message || 'Error occurred';
-        });
+    ...mapActions({
+      loadSummoner,
+    }),
+    requestSummonerData(evt) {
+      evt.preventDefault();
+      this.loadSummoner({ name: this.summonerName });
     },
   },
 };
