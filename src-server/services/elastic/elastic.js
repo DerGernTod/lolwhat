@@ -55,12 +55,15 @@ export function putData(documentPath, data) {
 
 export async function getOrCreateElasticData(indexUrl, apiUrl, validUntil, enrichDocument) {
   let [err, data] = await to(getData(indexUrl));
-  if (!err && data.found && data._source.validUntil > Date.now()) {
-    return data._source;
+  let responseJson;
+  if (!err && data.found) {
+    responseJson = data._source;
   }
-  console.log(`no valid data for ${indexUrl}. error: ${JSON.stringify(err)} - fetching from riot api`);
+  if (responseJson && responseJson.validUntil > Date.now()) {
+    return responseJson;
+  }
+  console.log(`no valid data for ${indexUrl} or data became invalid. error: ${JSON.stringify(err)} - fetching from riot api`);
   [err, data] = await to(fetchRiotApi(apiUrl));
-
   console.log('got riot api result. error:', err);
   if (!err) {
     data.validUntil = validUntil;
@@ -72,6 +75,6 @@ export async function getOrCreateElasticData(indexUrl, apiUrl, validUntil, enric
     console.log(`elastic putData result for ${indexUrl}: ${putResult}, error: ${putErr}`);
     return data;
   }
-  console.log(`error for api call to ${apiUrl}: ${JSON.stringify(err)}`);
-  return null;
+  console.log(`error for api call to ${apiUrl}: ${JSON.stringify(err)}. delivering probably outdated result.`);
+  return responseJson;
 }

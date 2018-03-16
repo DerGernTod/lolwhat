@@ -8,7 +8,10 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     summoner: {
-      searchResult: {},
+      searchResult: {
+        data: null,
+        error: null,
+      },
       active: {
         name: 'Unknown Summoner',
         profileIconUrl: '/static/images/empty/profileIcon.png',
@@ -33,9 +36,9 @@ const store = new Vuex.Store({
   actions: {
     async [loadSummoner]({ commit, dispatch }, payload) {
       const searchResult = await dispatch(searchSummoner, payload);
-      const { fetchResult } = searchResult;
-      if (fetchResult) {
-        commit(changeActiveSummoner, { summoner: fetchResult });
+      const { data } = searchResult;
+      if (data) {
+        commit(changeActiveSummoner, { summoner: data });
       }
       return searchResult;
     },
@@ -43,8 +46,8 @@ const store = new Vuex.Store({
       let result;
       try {
         commit(loadSummonerStart);
-        const fetchResult = await fetchSummonerByName(payload.name);
-        result = { fetchResult };
+        const data = await fetchSummonerByName(payload.name);
+        result = { data };
       } catch (error) {
         result = { error };
         return error;
