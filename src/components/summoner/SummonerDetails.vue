@@ -16,7 +16,7 @@
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
-import { loadSummoner } from '@/store/action-types';
+import { ACT_LOAD_SUMMONER } from '@/store/modules/summoner';
 
 export default {
   name: 'SummonerDetails',
@@ -26,7 +26,7 @@ export default {
   }),
   methods: {
     ...mapActions({
-      loadSummoner,
+      loadSummoner: ACT_LOAD_SUMMONER,
     }),
   },
   mounted() {
