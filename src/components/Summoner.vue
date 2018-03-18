@@ -4,24 +4,43 @@
     <div>
       <h3>Search for summoner</h3>
       <form v-on:submit="requestSummonerData($event)">
-        <input v-model="summonerName" placeholder="Summoner name">
-        <input type="submit" value="Request Data" />
-        <svg v-if="requestPending" class="loading__distractor loading__distractor--small" width="15px" height="15px" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">´
-          <circle class="loading__path" cx="15" cy="15" r="12"></circle>
-        </svg>
+        <fieldset class="fieldset">
+          <div class="field">
+            <label for="summonerNameId" class="label inputfield__icon--search">
+              Search for summoner
+            </label>
+            <input :disabled="requestPending" id="summonerNameId"
+              v-model="summonerName"
+              type="search"
+              class="inputfield inputfield--search">
+          </div>
+          <div class="field">
+            <input :disabled="requestPending"
+              role="button"
+              type="submit"
+              class="btn btn--primary"
+              value="Request Data" />
+          </div>
+          <svg v-show="requestPending" class="loading__distractor loading__distractor--small" width="15px" height="15px" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">´
+            <circle class="loading__path" cx="15" cy="15" r="12"></circle>
+          </svg>
+        </fieldset>
       </form>
       <summoner-search-result v-if="summonerData"
         :name="summonerData.name"
         :level="summonerData.summonerLevel"
         :profileUrl="summonerData.profileUrl">
       </summoner-search-result>
+      <div v-else-if="searchError">
+        Couldn't find data for summoner.
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
-import { ACT_LOAD_SUMMONER } from '@/store/modules/summoner';
+import { loadSummoner } from '@/store/modules/summoner';
 import SummonerSearchResult from './summoner/SummonerSearchResult';
 
 export default {
@@ -45,7 +64,7 @@ export default {
   // }),
   methods: {
     ...mapActions({
-      loadSummoner: ACT_LOAD_SUMMONER,
+      loadSummoner,
     }),
     requestSummonerData(evt) {
       evt.preventDefault();

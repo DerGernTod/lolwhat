@@ -3,7 +3,8 @@ import fetch, { Headers } from 'node-fetch';
 import secrets from '../../secrets.json';
 
 let curWaitUntil = 0;
-let activePromise = Promise.resolve();
+let fetchRunning = false;
+const curListeners = [];
 export const RIOT_URLS = {
   base: 'https://euw1.api.riotgames.com/lol',
   championMastery: 'champion-mastery/v3',
@@ -24,31 +25,43 @@ function waitUntilAllowed() {
   if (totalWaitTime <= 0) {
     return Promise.resolve();
   }
-  return timeout(totalWaitTime).then(() => waitUntilAllowed());
+  console.log('remaining waiting time: ', totalWaitTime);
+  return timeout(Math.min(10000, totalWaitTime)).then(() => waitUntilAllowed());
 }
 
-export function fetchRiotApi(url) {
-  console.log(`Riotapi fetch to ${url}`);
-  activePromise = activePromise
-    .then(waitUntilAllowed)
-    .then(() => fetch(url, {
-      headers: new Headers({ 'x-riot-token': secrets.apiKey }),
-    }))
-    .then((response) => {
-      if (response.status !== 200) {
-        return Promise.reject({
-          status: response.status,
-          retryAfter: response.headers.get('retry-after'),
-        });
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      if (error.status === 429) {
-        curWaitUntil = Date.now() + error.retryAfter;
-        return fetchRiotApi(url);
-      }
-      return Promise.reject(error);
+export async function fetchRiotApi(url) {
+  /* eslint-disable no-await-in-loop */
+
+  // if a fetch is currently running, create a new promise that
+  // is enqueued. await it's resolution
+  if (fetchRunning) {
+    await new Promise((resolve) => {
+      curListeners.push(resolve);
     });
-  return activePromise;
+  }
+  fetchRunning = true;
+  await waitUntilAllowed();
+  let response = { status: 429 };
+  while (response.status === 429) {
+    response = await fetch(url, {
+      headers: new Headers({ 'x-riot-token': secrets.apiKey }),
+    });
+    if (response.status === 429) {
+      curWaitUntil = Date.now() + response.headers.get('retry-after');
+    }
+    await waitUntilAllowed();
+  }
+  /* eslint-enable no-await-in-loop */
+
+  // this fetch isn't running anymore, so resolve the first
+  // promise that was registered to be queued, so that this
+  // request is triggered next
+  fetchRunning = false;
+  if (curListeners.length) {
+    curListeners.splice(1)[0]();
+  }
+  if (response.status !== 200) {
+    throw new Error('Received invalid status from riot api: ', response.status);
+  }
+  return response.json();
 }

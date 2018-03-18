@@ -7,7 +7,7 @@ yarn-error.log*
 /test/unit/coverage/
 dist-server/
 data/
-
+static/riot/
 # Editor directories and files
 .idea
 .vscode

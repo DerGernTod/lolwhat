@@ -1,7 +1,9 @@
 import { exec } from 'child_process';
 import fetch, { Headers } from 'node-fetch';
 import lolWhatConfig from '@/../config/lolwhat.config.json';
+import { summonerIndex, staticIndex } from '@/services/elastic/indices';
 import to from '&/utils/to';
+import timeout from '&/utils/timeout';
 import { fetchRiotApi } from '../riotapi/riotapi';
 
 const ELASTIC_URL = 'http://localhost:9200/';
@@ -15,22 +17,19 @@ function processCallback(err, stdout, stderr) {
   console.log(stderr);
 }
 
-export default function launchElastic() {
-  exec(`"${lolWhatConfig.elasticExec}"`, processCallback);
-  console.log(`elastic instance at ${ELASTIC_URL}`);
-  exec(`"${lolWhatConfig.kibanaExec}" -e ${ELASTIC_URL}`, processCallback);
-  console.log('kibana instance at port 5601');
-}
-
 async function elasticFetch(path, options) {
   const headers = options.headers || new Headers();
   headers.set('Content-Type', 'application/json');
-  const res = await fetch(`${ELASTIC_URL}lolwhat/${path}`, {
+  const res = await fetch(`${ELASTIC_URL}${path}`, {
     ...options,
     headers,
   });
-  console.log(`elastic request to '${path}'`);
-  return res.json();
+  console.log(`elastic request to '${ELASTIC_URL}${path}'`);
+  const jsonRes = await res.json();
+  if (jsonRes.error) {
+    throw new Error(jsonRes.error.message || JSON.stringify(jsonRes.error));
+  }
+  return jsonRes;
 }
 
 export function searchData(documentPath, searchBody) {
@@ -62,7 +61,8 @@ export async function getOrCreateElasticData(indexUrl, apiUrl, validUntil, enric
   if (responseJson && responseJson.validUntil > Date.now()) {
     return responseJson;
   }
-  console.log(`no valid data for ${indexUrl} or data became invalid. error: ${JSON.stringify(err)} - fetching from riot api`);
+  console.log(`no valid data for ${indexUrl} or data became invalid. data/error:`, data, err);
+  console.log('fetching from riot api...');
   [err, data] = await to(fetchRiotApi(apiUrl));
   console.log('got riot api result. error:', err);
   if (!err) {
@@ -72,9 +72,36 @@ export async function getOrCreateElasticData(indexUrl, apiUrl, validUntil, enric
       data = await enrichDocument(data);
     }
     const [putErr, putResult] = await to(putData(indexUrl, data));
-    console.log(`elastic putData result for ${indexUrl}: ${putResult}, error: ${putErr}`);
+    console.log(`elastic putData result for ${indexUrl}`, putResult, putErr);
     return data;
   }
   console.log(`error for api call to ${apiUrl}: ${JSON.stringify(err)}. delivering probably outdated result.`);
   return responseJson;
+}
+
+async function initializeIndices() {
+  /* eslint-disable no-await-in-loop */
+  let error = true;
+  while (error) {
+    await timeout(1000);
+    try {
+      await getData('');
+      error = false;
+    } catch (e) {
+      console.log('waiting for elastic service to be available...');
+    }
+  }
+  /* eslint-enable no-await-in-loop */
+  let [err] = await to(putData('static', staticIndex));
+  if (err) { console.error('error creating `static` index:', err); }
+  [err] = await to(putData('summoner', summonerIndex));
+  if (err) { console.error('error creating `summoner` index:', err); }
+}
+
+export default function launchElastic() {
+  exec(`"${lolWhatConfig.elasticExec}"`, processCallback);
+  console.log(`elastic instance at ${ELASTIC_URL}`);
+  exec(`"${lolWhatConfig.kibanaExec}" -e ${ELASTIC_URL}`, processCallback);
+  console.log('kibana instance at port 5601');
+  initializeIndices();
 }

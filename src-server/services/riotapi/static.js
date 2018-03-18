@@ -6,11 +6,21 @@ const STATIC_URLS = {
   champions: `${RIOT_URLS.base}/${RIOT_URLS.staticData}/champions`,
 };
 
-export function fetchProfileIcons() {
+export function fetchProfileIcon(iconId) {
   return getOrCreateElasticData(
-    'static/profile-icons',
+    `static/profile-icons/${iconId}`,
     `${STATIC_URLS.profileIcons}?locale=en_US`,
-    Date.now() + (1000 * 60 * 60 * 24 * 7));
+    Date.now() + (1000 * 60 * 60 * 24 * 7),
+    (data) => {
+      const { version, validUntil } = data;
+      const imgData = data.data[iconId].image.full;
+      return {
+        version,
+        imgData,
+        validUntil,
+      };
+    },
+  );
 }
 
 export function fetchChampionData() {

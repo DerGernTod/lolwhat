@@ -2,11 +2,19 @@
   <div id="app">
     <div class="nav has-no-secondary">
       <a class="nav__brand" href="#/">
-        <img class="nav__logo" alt="LoLWhat?! Logo">
+        <i class="fas fa-address-card"></i>
       </a>
       <div class="nav__buttongroup">
-        <a class="nav__btn nav__btn--cta" target="_blank" href="https://github.com/dergerntod/lolwhat">Find me on GitHub</a>
-        <button class="nav__btn--menutoggle nav__btn" data-target="#nav-bar">Menu</button>
+        <a class="nav__btn nav__btn--cta"
+          target="_blank"
+          href="https://github.com/dergerntod/lolwhat">
+            Find me on GitHub
+        </a>
+        <button v-on:click="toggleMenu"
+          class="nav__btn--menutoggle nav__btn"
+          data-target="#nav-bar">
+            Menu
+        </button>
       </div>
       <nav id="nav-bar" class="nav__bar">
         <ul class="nav__list nav__list--primary">
@@ -55,6 +63,11 @@
 <script>
 export default {
   name: 'App',
+  methods: {
+    toggleMenu() {
+
+    },
+  },
 };
 </script>
 

@@ -4,7 +4,7 @@ import to from '&/utils/to';
 async function handleResponse(req, res, fn, ...args) {
   const [error, result] = await to(fn(...args));
   res.write(JSON.stringify(error || result || { error: 'no result' }));
-  console.log(`got result ${JSON.stringify(result)}`);
+  console.log('got result/error', result, error);
   res.end();
 }
 

@@ -19,6 +19,7 @@
     "express": "^4.16.2",
     "node-fetch": "^2.0.0",
     "node-sass": "^4.7.2",
+    "request": "^2.85.0",
     "sass-loader": "^6.0.7",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
