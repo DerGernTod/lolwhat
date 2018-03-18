@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import fetch, { Headers } from 'node-fetch';
 import lolWhatConfig from '@/../config/lolwhat.config.json';
 import { summonerIndex, staticIndex } from '@/services/elastic/indices';
@@ -7,15 +7,6 @@ import timeout from '&/utils/timeout';
 import { fetchRiotApi } from '../riotapi/riotapi';
 
 const ELASTIC_URL = 'http://localhost:9200/';
-
-function processCallback(err, stdout, stderr) {
-  if (err) {
-    console.error(`${err}\nPlease make sure you configured lolwhat.config.json correctly.`);
-    return;
-  }
-  console.log(stdout);
-  console.log(stderr);
-}
 
 async function elasticFetch(path, options) {
   const headers = options.headers || new Headers();
@@ -98,10 +89,20 @@ async function initializeIndices() {
   if (err) { console.error('error creating `summoner` index:', err); }
 }
 
+function spawnProcess(process, args, name, errorsOnly) {
+  const spawnedProcess = spawn(process, args);
+  if (!errorsOnly) {
+    spawnedProcess.stdout.on('data', data => console.log(`[${name}/out] ${data}`));
+  }
+  spawnedProcess.stderr.on('data', data => console.log(`[${name}/err] ${data}`));
+  spawnedProcess.on('close', code => console.log(`[${name}] shut down with code ${code}`));
+}
+
 export default function launchElastic() {
-  exec(`"${lolWhatConfig.elasticExec}"`, processCallback);
+  spawnProcess(lolWhatConfig.elasticExec, [], 'ELASTIC');
   console.log(`elastic instance at ${ELASTIC_URL}`);
-  exec(`"${lolWhatConfig.kibanaExec}" -e ${ELASTIC_URL}`, processCallback);
+  spawnProcess(lolWhatConfig.kibanaExec, ['-e', ELASTIC_URL], 'KIBANA', true);
   console.log('kibana instance at port 5601');
   initializeIndices();
 }
+
