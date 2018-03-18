@@ -82,11 +82,12 @@ async function initializeIndices() {
       console.log('waiting for elastic service to be available...');
     }
   }
+  console.log('creating elastic indices');
   /* eslint-enable no-await-in-loop */
   let [err] = await to(putData('static', staticIndex));
-  if (err) { console.error('error creating `static` index:', err); }
+  if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `static` index:', err); }
   [err] = await to(putData('summoner', summonerIndex));
-  if (err) { console.error('error creating `summoner` index:', err); }
+  if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `summoner` index:', err); }
 }
 
 function spawnProcess(process, args, name, errorsOnly) {
