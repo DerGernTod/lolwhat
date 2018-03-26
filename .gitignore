@@ -16,3 +16,4 @@ static/riot/
 *.njsproj
 *.sln
 *secrets*
+.nyc_output

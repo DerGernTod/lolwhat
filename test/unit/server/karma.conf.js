@@ -3,7 +3,7 @@
 // we are also using it with karma-webpack
 //   https://github.com/webpack/karma-webpack
 
-const webpackConfig = require('../../build/webpack.test.conf');
+const webpackConfig = require('../../../build/webpack.test-server.conf');
 
 module.exports = function karmaConfig(config) {
   config.set({
@@ -14,9 +14,12 @@ module.exports = function karmaConfig(config) {
     browsers: ['PhantomJS'],
     frameworks: ['mocha', 'sinon-chai', 'phantomjs-shim'],
     reporters: ['spec', 'coverage'],
-    files: ['./index.js'],
+    files: [{
+      pattern: 'specs/**/*.spec.js',
+    }],
     preprocessors: {
-      './index.js': ['webpack', 'sourcemap'],
+      './**/*.spec.js*': ['webpack'],
+      // './index.js': ['webpack', 'sourcemap'],
     },
     webpack: webpackConfig,
     webpackMiddleware: {

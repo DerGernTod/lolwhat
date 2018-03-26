@@ -46,7 +46,10 @@ var webpackConfig = {
         {
           test: /\.js$/,
           loader: 'babel-loader',
-          include: [path.resolve(__dirname, '../src-server')],
+          include: [
+            path.resolve(__dirname, '../src-server'),
+            path.resolve(__dirname, '../src-shared')
+          ],
         }
       ]
     }

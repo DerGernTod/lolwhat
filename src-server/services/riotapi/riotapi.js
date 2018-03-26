@@ -3,8 +3,8 @@ import fetch, { Headers } from 'node-fetch';
 import secrets from '../../secrets.json';
 
 let curWaitUntil = 0;
-let fetchRunning = false;
-const curListeners = [];
+const runningPromises = [];
+const resolveQueue = [];
 export const RIOT_URLS = {
   base: 'https://euw1.api.riotgames.com/lol',
   championMastery: 'champion-mastery/v3',
@@ -29,18 +29,8 @@ function waitUntilAllowed() {
   return timeout(Math.min(10000, totalWaitTime)).then(() => waitUntilAllowed());
 }
 
-export async function fetchRiotApi(url) {
+async function fetchWithRetry(url) {
   /* eslint-disable no-await-in-loop */
-
-  // if a fetch is currently running, create a new promise that
-  // is enqueued. await it's resolution
-  if (fetchRunning) {
-    await new Promise((resolve) => {
-      curListeners.push(resolve);
-    });
-  }
-  fetchRunning = true;
-  await waitUntilAllowed();
   let response = { status: 429 };
   while (response.status === 429) {
     response = await fetch(url, {
@@ -52,16 +42,45 @@ export async function fetchRiotApi(url) {
     await waitUntilAllowed();
   }
   /* eslint-enable no-await-in-loop */
+  return response;
+}
+
+export async function fetchRiotApi(url) {
+  // if a fetch is currently running, create a new promise that
+  // is enqueued. await it's resolution
+  const activePromiseWithUrl = runningPromises.find(val => val.url === url);
+  if (activePromiseWithUrl) {
+    return activePromiseWithUrl.promise;
+  }
+  if (runningPromises.length) {
+    await new Promise((resolve) => {
+      resolveQueue.push(resolve);
+    });
+  }
+  let curResolver;
+  let curRejector;
+  const promise = new Promise((resolve, reject) => {
+    curResolver = resolve;
+    curRejector = reject;
+  });
+  runningPromises.push({ url, promise });
+  await waitUntilAllowed();
+  const response = await fetchWithRetry(url);
 
   // this fetch isn't running anymore, so resolve the first
   // promise that was registered to be queued, so that this
   // request is triggered next
-  fetchRunning = false;
-  if (curListeners.length) {
-    curListeners.splice(1)[0]();
+  if (resolveQueue.length) {
+    resolveQueue.splice(0, 1)[0]();
   }
+  const runningIndex = runningPromises.findIndex(val => val.url === url);
+  runningPromises.splice(runningIndex, 1);
   if (response.status !== 200) {
-    throw new Error('Received invalid status from riot api: ', response.status);
+    const errorMessage = `Received invalid status from riot api: ${response.status}`;
+    curRejector(errorMessage);
+    throw new Error(errorMessage);
   }
-  return response.json();
+  const jsonBody = await response.json();
+  curResolver(jsonBody);
+  return jsonBody;
 }

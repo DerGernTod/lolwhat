@@ -4,7 +4,7 @@ import { RIOT_URLS, fetchRiotApi } from './riotapi';
 import { getOrCreateElasticData } from '../elastic/elastic';
 import { fetchProfileIcon } from './static';
 
-const SUMMONER_URLS = {
+export const SUMMONER_URLS = {
   byAccount: `${RIOT_URLS.base}/${RIOT_URLS.summoner}/by-account`,
   byName: `${RIOT_URLS.base}/${RIOT_URLS.summoner}/by-name`,
 };
