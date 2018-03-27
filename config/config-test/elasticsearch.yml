@@ -1,0 +1,6 @@
+path:
+  data: C:/Users/gegen/Dropbox/web-work/riotapi/testdata/lib/elastic
+  logs: C:/Users/gegen/Dropbox/web-work/riotapi/testdata/logs/elastic
+http.port: 9200
+network.host: 127.0.0.1
+cluster.routing.allocation.disk.watermark.high: 95%

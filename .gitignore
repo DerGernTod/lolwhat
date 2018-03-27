@@ -7,6 +7,7 @@ yarn-error.log*
 /test/unit/coverage/
 dist-server/
 data/
+testdata/
 static/riot/
 # Editor directories and files
 .idea

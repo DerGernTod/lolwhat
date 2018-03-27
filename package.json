@@ -11,11 +11,11 @@
     "unit": "cross-env BABEL_ENV=test karma start test/unit/server/karma.conf.js --single-run",
     "test": "npm run unit",
     "test:server": "mocha-webpack --webpack-config ./build/webpack.test-server.conf.js \"test/unit/server/**/*.spec.js\"",
-    "cov:server": "cross-env NODE_ENV=coverage nyc --nycrc-path=./test/unit/server/.nycrc.json npm run test:server",
+    "cov:server": "cross-env ES_PATH_CONF=./config/config-test cross-env NODE_ENV=coverage nyc --nycrc-path=./test/unit/server/.nycrc.json npm run test:server",
     "lint": "eslint --ext .js,.vue src test/unit",
     "build": "node build/build.js",
     "build:server": "webpack -w --config ./build/webpack.server.conf.js",
-    "dev:server": "nodemon --watch dist-server ./dist-server/bundle.js"
+    "dev:server": "cross-env ES_PATH_CONF=./config nodemon --watch dist-server ./dist-server/bundle.js"
   },
   "dependencies": {
     "express": "^4.16.2",

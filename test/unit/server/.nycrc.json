@@ -5,7 +5,7 @@
   ],
   "reporter": [
     "lcov",
-    "text-summary"
+    "text"
   ],
   "report-dir": "./test/unit/coverage/server",
   "instrument": false,

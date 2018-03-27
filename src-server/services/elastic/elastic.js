@@ -99,11 +99,11 @@ function spawnProcess(process, args, name, errorsOnly) {
   spawnedProcess.on('close', code => console.log(`[${name}] shut down with code ${code}`));
 }
 
-export default function launchElastic() {
+export default async function launchElastic() {
   spawnProcess(lolWhatConfig.elasticExec, [], 'ELASTIC');
   console.log(`elastic instance at ${ELASTIC_URL}`);
   spawnProcess(lolWhatConfig.kibanaExec, ['-e', ELASTIC_URL], 'KIBANA', true);
   console.log('kibana instance at port 5601');
-  initializeIndices();
+  return initializeIndices();
 }
 

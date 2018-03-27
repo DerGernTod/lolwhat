@@ -1,6 +1,6 @@
 path:
-  data: ./data/lib/elastic
-  logs: ./data/logs/elastic
+  data: ${ES_PATH_CONF}/../data/lib/elastic
+  logs: ${ES_PATH_CONF}/../data/logs/elastic
 http.port: 9200
 network.host: 127.0.0.1
 cluster.routing.allocation.disk.watermark.high: 95%

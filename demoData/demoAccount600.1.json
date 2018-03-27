@@ -1,5 +1,0 @@
-{
-    "status": 200,
-    "totalGames": 610,
-    "matches": [{ "gameId": 600 }, { "gameId": 601 }, { "gameId": 602 }, { "gameId": 603 }, { "gameId": 604 }, { "gameId": 605 }, { "gameId": 606 }, { "gameId": 607 }, { "gameId": 608 }, { "gameId": 609 }]
-}
