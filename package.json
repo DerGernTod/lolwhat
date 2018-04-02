@@ -5,7 +5,7 @@
   "author": "Gernot Raudner <gitkraken@gernotraudner.at>",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\" \"npm run build:server\"",
+    "dev": "concurrently \"npm run dev:server\" \"npm run build:server\"",
     "dev:client": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/server/karma.conf.js --single-run",
@@ -20,7 +20,7 @@
   "dependencies": {
     "express": "^4.16.2",
     "node-fetch": "^2.0.0",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.8.3",
     "request": "^2.85.0",
     "sass-loader": "^6.0.7",
     "vue": "^2.5.2",

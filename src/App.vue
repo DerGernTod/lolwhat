@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <div class="nav has-no-secondary">
-      <a class="nav__brand" href="#/">
+      <router-link class="nav__brand" to="/">
         <i class="fas fa-address-card"></i>
-      </a>
+      </router-link>
       <div class="nav__buttongroup">
         <a class="nav__btn nav__btn--cta"
           target="_blank"
@@ -19,39 +19,15 @@
       <nav id="nav-bar" class="nav__bar">
         <ul class="nav__list nav__list--primary">
           <li class="nav__item">
-            <a class="nav__link" href="#/">Summoner</a>
+            <router-link class="nav__link" to="/summoner">Summoner</router-link>
           </li>
           <li class="nav__item">
-            <a class="nav__link" href="#/champions">Champions</a>
+            <router-link class="nav__link" to="/champions">Champions</router-link>
           </li>
         </ul>
       </nav>
     </div>
-    <div class="area">
-      <div class="layout is-flex">
-        <nav class="sidebar hide-sm">
-          <a href="#" class="sidebar__item is-active">
-            <span class="sidebar__headline">Matches</span>
-            <span class="sidebar__info">Comparison and performance</span>
-          </a>
-          <a href="#/summoner/champions" class="sidebar__item">
-            <span class="sidebar__headline">Champions</span>
-            <span class="sidebar__info">Matchup success and failures</span>
-          </a>
-          <a href="#/summoner/runes" class="sidebar__item">
-            <span class="sidebar__headline">Runes</span>
-            <span class="sidebar__info">Favourite runesets</span>
-          </a>
-          <a href="#/summoner/items" class="sidebar__item">
-            <span class="sidebar__headline">Items</span>
-            <span class="sidebar__info">Build performance</span>
-          </a>
-        </nav>
-        <div class="island island--connected">
-          <router-view/>
-        </div>
-      </div>
-    </div>
+    <router-view></router-view>
     <footer class="layout footer">
       <div>
         &copy; Gernot Raudner 2018
@@ -78,5 +54,8 @@ export default {
 }
 body {
   background-color:#f8f8f8;
+}
+.nav__list .router-link-active {
+  background-color: #454646;
 }
 </style>

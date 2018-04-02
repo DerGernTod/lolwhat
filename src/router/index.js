@@ -1,21 +1,12 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Summoner from '@/components/Summoner';
-import SummonerDetails from '@/components/summoner/SummonerDetails';
+import SummonerRoutes from './summonerRoutes';
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
-    {
-      path: '/',
-      name: 'Summoner',
-      component: Summoner,
-    },
-    {
-      path: '/summoner/:name',
-      name: 'SummonerDetails',
-      component: SummonerDetails,
-    },
+    ...SummonerRoutes,
   ],
+  linkActiveClass: 'router-link-active',
 });

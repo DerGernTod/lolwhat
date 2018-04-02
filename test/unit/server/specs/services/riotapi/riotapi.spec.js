@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { fetchRiotApi } from '@/services/riotapi/riotapi';
 import { SUMMONER_URLS } from '@/services/riotapi';
-import elastic from '@/services/elastic/elastic';
+import elastic, { shutdownProcesses } from '@/services/elastic/elastic';
 import to from '&/utils/to';
 import staticSpec from './static.spec';
 
@@ -10,6 +10,7 @@ describe('riotapi.js', () => {
     this.timeout(15000);
     await elastic();
   });
+  after(() => shutdownProcesses());
   describe('#fetchRiotApi', () => {
     it('should provide a useful result', async () => {
       const [err, result] = await to(fetchRiotApi(`${SUMMONER_URLS.byName}/DerGernTod`));

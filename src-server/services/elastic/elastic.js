@@ -7,7 +7,7 @@ import timeout from '&/utils/timeout';
 import { fetchRiotApi } from '../riotapi/riotapi';
 
 const ELASTIC_URL = 'http://localhost:9200/';
-
+const spawnedProcesses = [];
 async function elasticFetch(path, options) {
   const headers = options.headers || new Headers();
   headers.set('Content-Type', 'application/json');
@@ -97,12 +97,17 @@ function spawnProcess(process, args, name, errorsOnly) {
   }
   spawnedProcess.stderr.on('data', data => console.log(`[${name}/err] ${data}`));
   spawnedProcess.on('close', code => console.log(`[${name}] shut down with code ${code}`));
+  return spawnedProcess;
+}
+
+export function shutdownProcesses() {
+  spawnedProcesses.forEach(process => process.kill('SIGKILL'));
 }
 
 export default async function launchElastic() {
-  spawnProcess(lolWhatConfig.elasticExec, [], 'ELASTIC');
+  spawnedProcesses.push(spawnProcess(lolWhatConfig.elasticExec, [], 'ELASTIC'));
   console.log(`elastic instance at ${ELASTIC_URL}`);
-  spawnProcess(lolWhatConfig.kibanaExec, ['-e', ELASTIC_URL], 'KIBANA', true);
+  spawnedProcesses.push(spawnProcess(lolWhatConfig.kibanaExec, ['-e', ELASTIC_URL], 'KIBANA', true));
   console.log('kibana instance at port 5601');
   return initializeIndices();
 }

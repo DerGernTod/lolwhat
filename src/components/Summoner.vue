@@ -1,78 +1,60 @@
 <template>
-  <div class="hello">
-    <h2>Riot Api Service</h2>
-    <div>
-      <h3>Search for summoner</h3>
-      <form v-on:submit="requestSummonerData($event)">
-        <fieldset class="fieldset">
-          <div class="field">
-            <label for="summonerNameId" class="label inputfield__icon--search">
-              Search for summoner
-            </label>
-            <input :disabled="requestPending" id="summonerNameId"
-              v-model="summonerName"
-              type="search"
-              class="inputfield inputfield--search">
-          </div>
-          <div class="field">
-            <input :disabled="requestPending"
-              role="button"
-              type="submit"
-              class="btn btn--primary"
-              value="Request Data" />
-          </div>
-          <svg v-show="requestPending" class="loading__distractor loading__distractor--small" width="15px" height="15px" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">´
-            <circle class="loading__path" cx="15" cy="15" r="12"></circle>
-          </svg>
-        </fieldset>
-      </form>
-      <summoner-search-result v-if="summonerData"
-        :name="summonerData.name"
-        :level="summonerData.summonerLevel"
-        :profileUrl="summonerData.profileUrl">
-      </summoner-search-result>
-      <div v-else-if="searchError">
-        Couldn't find data for summoner.
+    <div class="area">
+      <div class="layout is-flex">
+        <nav class="sidebar hide-sm" v-if="hasData">
+          <router-link v-bind:to="`/summoner/${name}/details`" class="sidebar__item is-active">
+            <span class="sidebar__headline">Profile</span>
+            <span class="sidebar__info">Summoner summary</span>
+          </router-link>
+          <router-link v-bind:to="`/summoner/${name}/matches`" class="sidebar__item is-active">
+            <span class="sidebar__headline">Matches</span>
+            <span class="sidebar__info">Comparison and performance</span>
+          </router-link>
+          <router-link v-bind:to="`/summoner/${name}/champions`" class="sidebar__item">
+            <span class="sidebar__headline">Champions</span>
+            <span class="sidebar__info">Matchup success and failures</span>
+          </router-link>
+          <router-link v-bind:to="`/summoner/${name}/runes`" class="sidebar__item">
+            <span class="sidebar__headline">Runes</span>
+            <span class="sidebar__info">Favourite runesets</span>
+          </router-link>
+          <router-link v-bind:to="`/summoner/${name}/items`" class="sidebar__item">
+            <span class="sidebar__headline">Items</span>
+            <span class="sidebar__info">Build performance</span>
+          </router-link>
+        </nav>
+        <div class="island island--connected">
+          <summoner-search></summoner-search>
+          <router-view></router-view>
+        </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-import { loadSummoner } from '@/store/modules/summoner';
-import SummonerSearchResult from './summoner/SummonerSearchResult';
+import { mapState } from 'vuex';
+import SummonerSearch from './summoner/SummonerSearch';
 
 export default {
   name: 'Summoner',
-  data() {
-    return {
-      summonerName: '',
-    };
-  },
-  components: {
-    'summoner-search-result': SummonerSearchResult,
-  },
   computed: mapState({
-    summonerData: state => state.summoner.searchResult.data,
-    searchError: state => state.summoner.searchResult.error,
-    requestPending: state => state.summoner.requestPending,
+    name: state => state.summoner.active.name,
+    hasData: state => state.summoner.active.summonerLevel,
   }),
-  // computed: mapState({
-  //   summonerData: state => state.summoner.searchResult,
-  //   requestPending: state => state.summoner.requestPending,
-  // }),
-  methods: {
-    ...mapActions({
-      loadSummoner,
-    }),
-    requestSummonerData(evt) {
-      evt.preventDefault();
-      this.loadSummoner({ name: this.summonerName });
-    },
+  components: {
+    'summoner-search': SummonerSearch,
   },
 };
 </script>
-
-<style scoped>
+<style lang="scss" scoped>
+.router-link-active {
+  background-color: #00848e;
+  .sidebar__headline {
+    margin-left: .25em;
+    color: white;
+  }
+  .sidebar__info {
+    display: none;
+  }
+}
 </style>

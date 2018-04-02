@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     redirect() {
-      this.$router.push(`/summoner/${this.name}`);
+      this.$router.push(`/summoner/${this.name}/details`);
     },
   },
 };
