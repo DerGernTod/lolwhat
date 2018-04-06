@@ -1,11 +1,6 @@
 <template>
   <div>
-    <div v-if="loading" class="loading">
-      <svg class="loading__distractor" width="30px" height="30px" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
-        <circle class="loading__path" cx="15" cy="15" r="12"></circle>
-      </svg>
-      <p class="loading__text">Loading...</p>
-    </div>
+    <loading-distractor v-if="loading"></loading-distractor>
     <div class="details" v-if="!loading">
       <div class="img-crop" v-bind:style="{ 'background-image': 'url(' + profileUrl + ')' }"></div>
       <div class="profile-text">
@@ -45,9 +40,13 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import { loadSummoner } from '@/store/modules/summoner';
+import LoadingDistractor from '../utils/LoadingDistractor';
 
 export default {
   name: 'SummonerDetails',
+  components: {
+    'loading-distractor': LoadingDistractor,
+  },
   computed: mapState({
     name: state => state.summoner.active.name,
     level: state => state.summoner.active.summonerLevel,

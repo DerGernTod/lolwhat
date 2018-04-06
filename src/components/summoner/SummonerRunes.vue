@@ -1,11 +1,11 @@
 <template>
   <div>
-    Matches
+    Runes
   </div>
 </template>
 <script>
 
 export default {
-  name: 'SummonerMatches',
+  name: 'SummonerRunes',
 };
 </script>

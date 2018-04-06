@@ -78,7 +78,6 @@ module.exports = new Promise((resolve, reject) => {
       process.env.PORT = port;
       // add port to devServer config
       devWebpackConfig.devServer.port = port;
-      devWebpackConfig.entry.app.push('webpack-hot-middleware/client');
       // Add FriendlyErrorsPlugin
       devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
         compilationSuccessInfo: {

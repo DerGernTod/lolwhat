@@ -1,11 +1,11 @@
 <template>
   <div>
-    Matches
+    Champions
   </div>
 </template>
 <script>
 
 export default {
-  name: 'SummonerMatches',
+  name: 'SummonerChampions',
 };
 </script>

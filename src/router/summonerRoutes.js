@@ -1,12 +1,15 @@
-import Summoner from '@/components/Summoner';
-import SummonerDetails from '@/components/summoner/SummonerDetails';
+import SummonerMain from '@/components/SummonerMain';
 import SummonerMatches from '@/components/summoner/SummonerMatches';
+import SummonerChampions from '@/components/summoner/SummonerChampions';
+import SummonerDetails from '@/components/summoner/SummonerDetails';
+import SummonerItems from '@/components/summoner/SummonerItems';
+import SummonerRunes from '@/components/summoner/SummonerRunes';
 
 export default [
   {
     path: '/summoner',
     name: 'Summoner',
-    component: Summoner,
+    component: SummonerMain,
     children: [
       {
         path: ':name/details',
@@ -17,6 +20,21 @@ export default [
         path: ':name/matches',
         name: 'SummonerMatches',
         component: SummonerMatches,
+      },
+      {
+        path: ':name/champions',
+        name: 'SummonerChampions',
+        component: SummonerChampions,
+      },
+      {
+        path: ':name/runes',
+        name: 'SummonerRunes',
+        component: SummonerRunes,
+      },
+      {
+        path: ':name/items',
+        name: 'SummonerItems',
+        component: SummonerItems,
       },
     ],
   },

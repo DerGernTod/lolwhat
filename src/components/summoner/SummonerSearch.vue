@@ -1,9 +1,7 @@
 <template>
 
   <div class="hello">
-    <h2>Riot Api Service</h2>
     <div>
-      <h3>Search for summoner</h3>
       <form v-on:submit="requestSummonerData($event)">
         <fieldset class="fieldset">
           <div class="field">

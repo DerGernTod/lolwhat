@@ -36,7 +36,7 @@ import { mapState } from 'vuex';
 import SummonerSearch from './summoner/SummonerSearch';
 
 export default {
-  name: 'Summoner',
+  name: 'SummonerMain',
   computed: mapState({
     name: state => state.summoner.active.name,
     hasData: state => state.summoner.active.summonerLevel,
@@ -47,14 +47,20 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.sidebar__info {
+  overflow: hidden;
+  max-height: 2em;
+}
 .router-link-active {
+  transition: background-color 0.25s, color 0.1s;
   background-color: #00848e;
   .sidebar__headline {
     margin-left: .25em;
     color: white;
   }
   .sidebar__info {
-    display: none;
+    max-height: 0;
+    transition: max-height .25s;
   }
 }
 </style>
