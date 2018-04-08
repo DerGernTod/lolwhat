@@ -1,4 +1,4 @@
-import { fetchSummonerByName } from '@/services/riotapi';
+import { fetchSummonerByName, fetchMatchesByAccountId } from '@/services/riotapi';
 import to from '&/utils/to';
 
 async function handleResponse(req, res, fn, ...args) {
@@ -13,6 +13,10 @@ export default function init(app) {
   app.get('/api/summonerByName/:name', (req, res) => {
     console.log(`getting summoner ${req.params.name}`);
     handleResponse(req, res, fetchSummonerByName, req.params.name);
+  });
+  app.get('/api/matchListByAccount/:accountId', (req, res) => {
+    console.log(`getting matches for ${req.params.accountId}`);
+    handleResponse(req, res, fetchMatchesByAccountId, req.params.accountId);
   });
 }
 

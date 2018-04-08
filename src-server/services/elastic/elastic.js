@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import fetch, { Headers } from 'node-fetch';
 import lolWhatConfig from '@/../config/lolwhat.config.json';
-import { summonerIndex, staticIndex } from '@/services/elastic/indices';
+import { summonerIndex, staticIndex, matchesIndex } from '@/services/elastic/indices';
 import to from '&/utils/to';
 import timeout from '&/utils/timeout';
 import { fetchRiotApi } from '../riotapi/riotapi';
@@ -30,6 +30,16 @@ export function searchData(documentPath, searchBody) {
   });
 }
 
+export function updateOrCreateData(documentPath, data) {
+  return elasticFetch(`${documentPath}/_update`, {
+    method: 'POST',
+    body: JSON.stringify({
+      doc: data,
+      upsert: data,
+    }),
+  });
+}
+
 export function getData(documentPath) {
   return elasticFetch(documentPath, {
     method: 'GET',
@@ -55,7 +65,6 @@ export async function getOrCreateElasticData(indexUrl, apiUrl, validUntil, enric
   console.log(`no valid data for ${indexUrl} or data became invalid. data/error:`, data, err);
   console.log('fetching from riot api...');
   [err, data] = await to(fetchRiotApi(apiUrl));
-  console.log('got riot api result. error:', err);
   if (!err) {
     data.validUntil = validUntil;
     if (enrichDocument) {
@@ -66,7 +75,7 @@ export async function getOrCreateElasticData(indexUrl, apiUrl, validUntil, enric
     console.log(`elastic putData result for ${indexUrl}`, putResult, putErr);
     return data;
   }
-  console.log(`error for api call to ${apiUrl}: ${JSON.stringify(err)}. delivering probably outdated result.`);
+  console.log(`error for api call: ${err.message}. delivering probably outdated result.`);
   return responseJson;
 }
 
@@ -88,6 +97,9 @@ async function initializeIndices() {
   if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `static` index:', err); }
   [err] = await to(putData('summoner', summonerIndex));
   if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `summoner` index:', err); }
+  [err] = await to(putData('matches', matchesIndex));
+  if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `matches` index:', err); }
+
 }
 
 function spawnProcess(process, args, name, errorsOnly) {

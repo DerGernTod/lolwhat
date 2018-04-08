@@ -2,11 +2,15 @@
     <div class="area">
       <div class="layout is-flex">
         <nav class="sidebar hide-sm" v-if="hasData">
-          <router-link v-bind:to="`/summoner/${name}/details`" class="sidebar__item is-active">
+          <router-link v-bind:to="`/summoner`" class="sidebar__item" exact>
+            <span class="sidebar__headline">Search</span>
+            <span class="sidebar__info">Search for someone</span>
+          </router-link>
+          <router-link v-bind:to="`/summoner/${name}/details`" class="sidebar__item">
             <span class="sidebar__headline">Profile</span>
             <span class="sidebar__info">Summoner summary</span>
           </router-link>
-          <router-link v-bind:to="`/summoner/${name}/matches`" class="sidebar__item is-active">
+          <router-link v-bind:to="`/summoner/${name}/matches`" class="sidebar__item">
             <span class="sidebar__headline">Matches</span>
             <span class="sidebar__info">Comparison and performance</span>
           </router-link>
@@ -24,7 +28,6 @@
           </router-link>
         </nav>
         <div class="island island--connected">
-          <summoner-search></summoner-search>
           <router-view></router-view>
         </div>
       </div>
@@ -51,9 +54,24 @@ export default {
   overflow: hidden;
   max-height: 2em;
 }
+.sidebar__item {
+  &:hover {
+    background-color: #e0e0e0;
+  }
+  &:active {
+    transition: background-color .25s, color .1s;
+    background-color: #f0f0f0;
+  }
+}
 .router-link-active {
-  transition: background-color 0.25s, color 0.1s;
+  transition: background-color .5s, color .25s;
   background-color: #00848e;
+  &.sidebar__item:hover {
+    background-color: #028690;
+  }
+  &.sidebar__item:active {
+    background-color: #048892;
+  }
   .sidebar__headline {
     margin-left: .25em;
     color: white;

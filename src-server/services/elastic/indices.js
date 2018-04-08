@@ -13,7 +13,7 @@ export const summonerIndex = {
           format: 'epoch_millis',
         },
       },
-    },
+    }
   },
   settings: {
     index: {
@@ -26,6 +26,7 @@ export const summonerIndex = {
 
 export const staticIndex = {
   mappings: {
+    // this has to be restructured - use type property
     'profile-icons': {
       properties: {
         imgData: { type: 'text' },
@@ -34,6 +35,36 @@ export const staticIndex = {
           format: 'epoch_millis',
         },
         version: { type: 'text' },
+      },
+    },
+  },
+  settings: {
+    index: {
+      'mapping.total_fields.limit': 1000,
+      number_of_shards: 3,
+      number_of_replicas: 2,
+    },
+  },
+};
+
+export const matchIndex = {
+  mappings: {
+    matches: {
+      properties: {
+        accountId: { type: 'integer' },
+        matches: {
+          type: 'nested',
+          properties: {
+            lane: { type: 'text' },
+            gameId: { type: 'long' },
+            champion: { type: 'integer' },
+            platformId: { type: 'text' },
+            timestamp: { type: 'date', format: 'epoch_millis' },
+            queue: { type: 'integer' },
+            role: { type: 'text' },
+            season: { type: 'integer' },
+          },
+        },
       },
     },
   },

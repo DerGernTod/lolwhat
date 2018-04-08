@@ -4,5 +4,6 @@ export function fetchMatchListByAccount(accountId) {
 export function fetchSummonerByName(summonerName) {
   return fetch(`/api/summonerByName/${summonerName}`).then(response => response.json());
 }
+
 // export function fetchMatchById(matchId) {
 // }

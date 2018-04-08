@@ -4,13 +4,18 @@ import SummonerChampions from '@/components/summoner/SummonerChampions';
 import SummonerDetails from '@/components/summoner/SummonerDetails';
 import SummonerItems from '@/components/summoner/SummonerItems';
 import SummonerRunes from '@/components/summoner/SummonerRunes';
+import SummonerSearch from '@/components/summoner/SummonerSearch';
 
 export default [
   {
     path: '/summoner',
-    name: 'Summoner',
     component: SummonerMain,
     children: [
+      {
+        path: '',
+        name: 'SummonerSearch',
+        component: SummonerSearch,
+      },
       {
         path: ':name/details',
         name: 'SummonerDetails',
