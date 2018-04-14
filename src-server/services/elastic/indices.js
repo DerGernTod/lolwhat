@@ -47,7 +47,7 @@ export const staticIndex = {
   },
 };
 
-export const matchIndex = {
+export const matchesIndex = {
   mappings: {
     matches: {
       properties: {

@@ -3,15 +3,22 @@
     Matches
     <loading-distractor v-if="loading"></loading-distractor>
     <ul v-if="!loading && hasValues">
-      <!-- <li v-for="match in matches" v-bind:key="match.gameId">
-        <span>{{match.timestamp}}</span>: {{match.role}}
-      </li> -->
+      <li v-if="!matches.length">No matches found</li>
+      <li v-for="match in matches" v-bind:key="match.gameId">
+        <div>{{new Date(match.timestamp).toLocaleString()}}:</div>
+        <div>
+          <div>champ: {{match.champion}}</div>
+          <div>lane: {{match.lane}}</div>
+          <div>role: {{match.role}}</div>
+
+        </div>
+      </li>
     </ul>
   </div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
-import { loadMatches } from '@/store/modules/matches';
+import { mapState, mapActions, mapGetters } from 'vuex';
+import { loadMatches, activeAccountMatches } from '@/store/modules/matches';
 import LoadingDistractor from '../utils/LoadingDistractor';
 
 export default {
@@ -19,16 +26,19 @@ export default {
   components: {
     'loading-distractor': LoadingDistractor,
   },
-  computed: mapState({
-    accountId: state => state.summoner.active.accountId,
-    name: state => state.summoner.active.name,
-    level: state => state.summoner.active.summonerLevel,
-    profileUrl: state => state.summoner.active.profileUrl,
-    loading: state => state.matches.requestPending,
-    matches: state => state.matches
-      .activeSummoner.matchIds.map(gameId => state.matches.matches[gameId]) || [],
-    hasValues: state => state.matches.activeSummoner.accountId !== -1,
-  }),
+  computed: {
+    ...mapState({
+      accountId: state => state.summoner.active.accountId,
+      name: state => state.summoner.active.name,
+      level: state => state.summoner.active.summonerLevel,
+      profileUrl: state => state.summoner.active.profileUrl,
+      loading: state => state.matches.requestPending,
+      hasValues: state => state.matches.activeSummoner.accountId !== -1,
+    }),
+    ...mapGetters({
+      matches: activeAccountMatches,
+    }),
+  },
   methods: {
     ...mapActions({
       loadMatches,

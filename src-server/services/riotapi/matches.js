@@ -32,12 +32,12 @@ export async function fetchMatchesByAccountId(accountId, loadMore) {
   if (!err && data.found) {
     responseDocument = data._source;
   }
-  console.log(`error fetching elastic (${err.message}) or no data found for account matches. fetching from riot...`);
+  console.log(`error fetching elastic (${err && err.message}) or no data found for account matches. fetching from riot...`);
   const matchAccountUrl = `${MATCH_URLS.byAccount}/${accountId}`;
   if (!data.found) {
     // if we didn't find any data, get latest 100 games from riot
     [err, data] = await to(fetchRiotApi(matchAccountUrl));
-    if (!err) {
+    if (!err && data.matches) {
       accountMatches = data.matches.reduce((total, current) => {
         total.matches.push(current);
         const oldestMatchTimestamp = Math.min(total.oldestMatchTimestamp, current.timestamp);
@@ -49,10 +49,13 @@ export async function fetchMatchesByAccountId(accountId, loadMore) {
         };
       },
       { matches: [], newestMatchTimestamp: 0, oldestMatchTimestamp: Number.MAX_VALUE });
+      responseDocument = {
+        ...accountMatches,
+        validUntil: Date.now() + (1000 * 60 * 20),
+      };
     } else {
       console.log(`no data in elastic and error fetching result form riot: ${err.message}`);
     }
-    // TODO store in elastic
   } else {
     // if we found data, check if it's still valid
     if (responseDocument.validUntil >= Date.now()) {
@@ -61,14 +64,14 @@ export async function fetchMatchesByAccountId(accountId, loadMore) {
     }
     // if no, request latest 100 games from riot
     [err, data] = await to(fetchRiotApi(matchAccountUrl));
-    if (!err) {
-      responseDocument.matches = data.match.reduce((total, riotMatch) => {
+    if (!err && data.matches) {
+      responseDocument.matches = data.matches.reduce((total, riotMatch) => {
         if (!total.find(elasticMatch => elasticMatch.gameId === riotMatch.gameId)) {
           total.push(riotMatch);
         }
         return total;
       }, responseDocument.matches);
-      responseDocument.match.sort((a, b) => a - b);
+      responseDocument.matches.sort((a, b) => a - b);
       // TODO: oldest/newest
       // stored time series -> array of (from -> to) timestamps where we have data
     } else {
@@ -76,6 +79,6 @@ export async function fetchMatchesByAccountId(accountId, loadMore) {
     }
   }
   [err] = await to(updateOrCreateData(`matches/matches/${accountId}`, responseDocument));
-  if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `summoner` index:', err); }
+  if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `matches` index:', err); }
   return responseDocument;
 }

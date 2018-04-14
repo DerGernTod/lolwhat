@@ -1,13 +1,16 @@
+import Vue from 'vue';
 import to from '&/utils/to';
 import { fetchMatchListByAccount } from '@/services/riotapiservice';
 
 export const MUT_LOAD_MATCHES_START = 'LOAD_MATCHES_START';
 export const MUT_LOAD_MATCHES_END = 'LOAD_MATCHES_END';
 export const loadMatches = 'ACTION_LOAD_MATCHES';
-
+export const activeAccountMatches = 'GETTER_ACTIVE_ACCOUNT_MATCHES';
 export default {
   state: {
-    matches: [],
+    matches: {
+      initialized: true,
+    },
     activeSummoner: {
       matchIds: [],
       accountId: -1,
@@ -36,10 +39,11 @@ export default {
         newestMatchTimestamp,
         oldestMatchTimestamp,
       };
-      matches.forEach((match) => {
+      for (let i = 0; i < matches.length; i++) {
+        const match = matches[i];
         state.activeSummoner.matchIds.push(match.gameId);
-        state.matches[match.gameId] = match;
-      });
+        Vue.set(state.matches, match.gameId, match);
+      }
       state.error = payload.error;
     },
   },
@@ -52,9 +56,16 @@ export default {
         result = { error: error || data.error };
       } else {
         result = data;
+        result.accountId = payload.accountId;
       }
       commit(MUT_LOAD_MATCHES_END, result);
       return result;
     },
+  },
+  getters: {
+    [activeAccountMatches]: state =>
+      state.activeSummoner.matchIds
+        .map(gameId => state.matches[gameId])
+        .sort((a, b) => a.timestamp - b.timestamp),
   },
 };

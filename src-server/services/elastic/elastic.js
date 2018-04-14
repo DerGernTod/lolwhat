@@ -31,11 +31,12 @@ export function searchData(documentPath, searchBody) {
 }
 
 export function updateOrCreateData(documentPath, data) {
+  console.log('[elastic] trying to upsert data', data);
   return elasticFetch(`${documentPath}/_update`, {
     method: 'POST',
     body: JSON.stringify({
       doc: data,
-      upsert: data,
+      doc_as_upsert: true,
     }),
   });
 }
