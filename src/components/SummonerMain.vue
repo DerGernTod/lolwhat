@@ -35,17 +35,36 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
+import { loadSummoner } from '@/store/modules/summoner';
 import SummonerSearch from './summoner/SummonerSearch';
 
 export default {
   name: 'SummonerMain',
-  computed: mapState({
-    name: state => state.summoner.active.name,
-    hasData: state => state.summoner.active.summonerLevel,
-  }),
+  computed: {
+    ...mapState({
+      name: state => state.summoner.active.name,
+      hasData: state => state.summoner.active.summonerLevel >= 0,
+    }),
+  },
   components: {
     'summoner-search': SummonerSearch,
+  },
+  methods: {
+    ...mapActions({
+      loadSummoner,
+    }),
+  },
+  mounted() {
+    if (this.$route && this.$route.params.name) {
+      this.loadSummoner({ name: this.$route.params.name });
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (from.params.name !== to.params.name && to.params.name) {
+      this.loadSummoner({ name: to.params.name });
+    }
+    next();
   },
 };
 </script>

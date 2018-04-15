@@ -2,7 +2,7 @@
   <div>
     Matches
     <loading-distractor v-if="loading"></loading-distractor>
-    <ul v-if="!loading && hasValues">
+    <ul v-if="!loading && accountId >= 0">
       <li v-if="!matches.length">No matches found</li>
       <li v-for="match in matches" v-bind:key="match.gameId">
         <div>{{new Date(match.timestamp).toLocaleString()}}:</div>
@@ -29,29 +29,23 @@ export default {
   computed: {
     ...mapState({
       accountId: state => state.summoner.active.accountId,
-      name: state => state.summoner.active.name,
-      level: state => state.summoner.active.summonerLevel,
-      profileUrl: state => state.summoner.active.profileUrl,
-      loading: state => state.matches.requestPending,
-      hasValues: state => state.matches.activeSummoner.accountId !== -1,
+      loading: state => state.summoner.requestPending || state.matches.requestPending,
     }),
     ...mapGetters({
       matches: activeAccountMatches,
     }),
   },
+  watch: {
+    accountId(newId) {
+      if (newId >= 0) {
+        this.loadMatches({ accountId: newId });
+      }
+    },
+  },
   methods: {
     ...mapActions({
       loadMatches,
     }),
-  },
-  mounted() {
-    this.loadMatches({ accountId: this.accountId });
-    // this.loadSummoner({ name: this.$route.params.name });
-  },
-  beforeRouteUpdate(to, from, next) {
-    // this.loadSummoner({ name: to.params.name });
-    this.loadMatches({ accountId: this.accountId });
-    next();
   },
 };
 </script>

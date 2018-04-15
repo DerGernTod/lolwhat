@@ -1,6 +1,7 @@
 import timeout from '&/utils/timeout';
 import fetch, { Headers } from 'node-fetch';
 import secrets from '../../secrets.json';
+import { setCurrentApiWaitTime, setCurrentApiQueueLength } from '../websockets';
 
 let curWaitUntil = 0;
 const runningPromises = [];
@@ -22,6 +23,7 @@ export const RIOT_URLS = {
 
 function waitUntilAllowed() {
   const totalWaitTime = curWaitUntil - Date.now();
+  setCurrentApiWaitTime(totalWaitTime);
   if (totalWaitTime <= 0) {
     return Promise.resolve();
   }
@@ -55,7 +57,9 @@ export async function fetchRiotApi(url) {
   if (runningPromises.length) {
     await new Promise((resolve) => {
       resolveQueue.push(resolve);
+      setCurrentApiQueueLength(resolveQueue.length);
     });
+    setCurrentApiQueueLength(resolveQueue.length);
   }
   let curResolver;
   let curRejector;
@@ -76,7 +80,9 @@ export async function fetchRiotApi(url) {
   const runningIndex = runningPromises.findIndex(val => val.url === url);
   runningPromises.splice(runningIndex, 1);
   if (response.status !== 200) {
-    const errorMessage = `Received invalid status from riot api: ${response.status}`;
+    const errorMessage = `Received invalid status from riot api: ${
+      response.status
+    }`;
     curRejector(errorMessage);
     throw new Error(errorMessage);
   }

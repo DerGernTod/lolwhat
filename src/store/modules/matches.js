@@ -50,13 +50,15 @@ export default {
   actions: {
     async [loadMatches]({ commit }, payload) {
       commit(MUT_LOAD_MATCHES_START);
-      const [error, data] = await to(fetchMatchListByAccount(payload.accountId));
-      let result = {};
-      if (error || data.error) {
-        result = { error: error || data.error };
-      } else {
-        result = data;
-        result.accountId = payload.accountId;
+      let result = { error: new Error(`Invalid account id '${payload.accountId}'`) };
+      if (!isNaN(payload.accountId) && payload.accountId >= 0) {
+        const [error, data] = await to(fetchMatchListByAccount(payload.accountId));
+        if (error || data.error) {
+          result = { error: error || data.error };
+        } else {
+          result = data;
+          result.accountId = payload.accountId;
+        }
       }
       commit(MUT_LOAD_MATCHES_END, result);
       return result;

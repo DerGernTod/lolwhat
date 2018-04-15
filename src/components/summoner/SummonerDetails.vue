@@ -38,8 +38,7 @@
 </style>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-import { loadSummoner } from '@/store/modules/summoner';
+import { mapState } from 'vuex';
 import LoadingDistractor from '../utils/LoadingDistractor';
 
 export default {
@@ -53,18 +52,6 @@ export default {
     profileUrl: state => state.summoner.active.profileUrl,
     loading: state => state.summoner.requestPending,
   }),
-  methods: {
-    ...mapActions({
-      loadSummoner,
-    }),
-  },
-  mounted() {
-    this.loadSummoner({ name: this.$route.params.name });
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.loadSummoner({ name: to.params.name });
-    next();
-  },
 };
 </script>
 

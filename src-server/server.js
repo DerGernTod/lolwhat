@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as express from 'express';
 import * as http from 'http';
 import * as bodyParser from 'body-parser';
+import { initializeWebsockets } from '@/services/websockets';
 import api from './api/api';
 import elastic from './services/elastic/elastic';
 
@@ -19,9 +20,14 @@ app.get('*', (req, res) => {
 });
 
 const server = http.createServer(app);
+initializeWebsockets(server);
 server.listen(port, (err) => {
   if (err) {
     console.log(err);
   }
-  console.info('==> 🌎 Listening on port %s. Open up http://0.0.0.0:%s/ in your browser.', port, port);
+  console.info(
+    '==> 🌎 Listening on port %s. Open up http://0.0.0.0:%s/ in your browser.',
+    port,
+    port,
+  );
 });
