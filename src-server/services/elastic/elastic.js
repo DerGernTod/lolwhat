@@ -8,6 +8,7 @@ import { fetchRiotApi } from '../riotapi/riotapi';
 
 const ELASTIC_URL = 'http://localhost:9200/';
 const spawnedProcesses = [];
+let instanceSpawned;
 async function elasticFetch(path, options) {
   const headers = options.headers || new Headers();
   headers.set('Content-Type', 'application/json');
@@ -100,7 +101,6 @@ async function initializeIndices() {
   if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `summoner` index:', err); }
   [err] = await to(putData('matches', matchesIndex));
   if (err && JSON.parse(err.message).type !== 'resource_already_exists_exception') { console.error('error creating `matches` index:', err); }
-
 }
 
 function spawnProcess(process, args, name, errorsOnly) {
@@ -118,6 +118,9 @@ export function shutdownProcesses() {
 }
 
 export default async function launchElastic() {
+  if (spawnedProcesses.length) {
+    return null;
+  }
   spawnedProcesses.push(spawnProcess(lolWhatConfig.elasticExec, [], 'ELASTIC'));
   console.log(`elastic instance at ${ELASTIC_URL}`);
   spawnedProcesses.push(spawnProcess(lolWhatConfig.kibanaExec, ['-e', ELASTIC_URL], 'KIBANA', true));

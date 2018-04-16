@@ -4,6 +4,7 @@
       <router-link class="nav__brand" to="/">
         <i class="fas fa-address-card"></i>
       </router-link>
+
       <div class="nav__buttongroup">
         <a class="nav__btn nav__btn--cta"
           target="_blank"
@@ -18,6 +19,9 @@
       </div>
       <nav id="nav-bar" class="nav__bar">
         <ul class="nav__list nav__list--primary">
+          <li class="nav__item progress-nav">
+            <riot-api-status></riot-api-status>
+          </li>
           <li class="nav__item">
             <router-link class="nav__link" to="/summoner">Summoner</router-link>
           </li>
@@ -37,12 +41,17 @@
 </template>
 
 <script>
+import RiotApiStatus from './components/utils/RiotApiStatus';
+
 export default {
   name: 'App',
   methods: {
     toggleMenu() {
 
     },
+  },
+  components: {
+    'riot-api-status': RiotApiStatus,
   },
 };
 </script>
@@ -57,5 +66,10 @@ body {
 }
 .nav__list .router-link-active {
   background-color: #454646;
+}
+.progress-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -7,8 +7,9 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "concurrently \"npm run dev:server\" \"npm run watch:server\" \"npm run dev:client\"",
-    "dev:server": "cross-env ES_PATH_CONF=./config nodemon ./dist-server/bundle.js --watch dist-server",
+    "dev:server": "cross-env ES_PATH_CONF=./config nodemon ./dist-server/bundle.js --noElastic --watch dist-server",
     "dev:client": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev:elastic": "node dist-server/bundle.js --elasticOnly",
     "test": "npm run unit",
     "test:server": "mocha-webpack --webpack-config ./build/webpack.test-server.conf.js \"test/unit/server/**/*.spec.js\"",
     "cov:server": "cross-env ES_PATH_CONF=./config/config-test cross-env NODE_ENV=coverage nyc --nycrc-path=./test/unit/server/.nycrc.json npm run test:server",

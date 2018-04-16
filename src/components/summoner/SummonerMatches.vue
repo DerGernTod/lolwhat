@@ -30,6 +30,10 @@ export default {
     ...mapState({
       accountId: state => state.summoner.active.accountId,
       loading: state => state.summoner.requestPending || state.matches.requestPending,
+      matchesLoaded: state =>
+        state.summoner.active.accountId >= 0 &&
+        state.matches.activeSummoner.accountId ===
+        state.summoner.active.accountId,
     }),
     ...mapGetters({
       matches: activeAccountMatches,
@@ -46,6 +50,17 @@ export default {
     ...mapActions({
       loadMatches,
     }),
+  },
+  mounted() {
+    if (!this.matchesLoaded && this.accountId >= 0) {
+      this.loadMatches({ accountId: this.accountId });
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    if (!this.matchesLoaded && this.accountId >= 0) {
+      this.loadMatches({ accountId: this.accountId });
+    }
+    next();
   },
 };
 </script>
